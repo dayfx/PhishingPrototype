@@ -9,3 +9,8 @@ services:
       POSTGRES_PASSWORD: thesis
     ports:
       - "5432:5432"
+    volumes: #so data stays persistent upon restart
+          - thesis_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  thesis_postgres_data:
