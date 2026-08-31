@@ -1,12 +1,253 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Phishing Demo</title>
+    <title>AI Phishing Personalization Demo</title>
 </head>
-<body>
-  <h1>Phishing Prototype </h1>
 
-  <p>Lorem Ipsum yada yada</p>
+<body>
+
+<h1>Phishing Prototype</h1>
+
+<p>
+    Create fictional companies and employees to simulate publicly
+    available information for Phishing awareness purposes.
+</p>
+
+<hr>
+
+<h2>Create Company</h2>
+
+<form th:action="@{/companies}" th:object="${company}" method="post">
+
+    <div>
+        <label for="name">Company Name:</label>
+        <input
+                type="text"
+                id="name"
+                th:field="*{name}"
+                required>
+    </div>
+
+    <br>
+
+    <div>
+        <label for="industry">Industry:</label>
+        <input
+                type="text"
+                id="industry"
+                th:field="*{industry}">
+    </div>
+
+    <br>
+
+    <div>
+        <label for="website">Website:</label>
+        <input
+                type="text"
+                id="website"
+                th:field="*{website}">
+    </div>
+
+    <br>
+
+    <div>
+        <label for="description">Description:</label>
+        <textarea
+                id="description"
+                th:field="*{description}">
+        </textarea>
+    </div>
+
+    <br>
+
+    <button type="submit">Create Company</button>
+
+</form>
+
+<hr>
+
+<h2>Create Employee</h2>
+
+<form th:action="@{/employees}" th:object="${employee}" method="post">
+
+    <div>
+        <label for="employeeName">Name:</label>
+        <input
+                type="text"
+                id="employeeName"
+                th:field="*{name}"
+                required>
+    </div>
+
+    <br>
+
+    <div>
+        <label for="role">Role:</label>
+        <input
+                type="text"
+                id="role"
+                th:field="*{role}">
+    </div>
+
+    <br>
+
+    <div>
+        <label for="department">Department:</label>
+        <input
+                type="text"
+                id="department"
+                th:field="*{department}">
+    </div>
+
+    <br>
+
+    <div>
+        <label for="publicInterests">Public Interests:</label>
+        <textarea
+                id="publicInterests"
+                th:field="*{publicInterests}">
+        </textarea>
+    </div>
+
+    <br>
+
+    <div>
+        <label for="recentPost">Recent Public Post:</label>
+        <textarea
+                id="recentPost"
+                th:field="*{recentPost}">
+        </textarea>
+    </div>
+
+    <br>
+
+    <div>
+        <label for="visibilitySource">Public Source:</label>
+        <input
+                type="text"
+                id="visibilitySource"
+                th:field="*{visibilitySource}"
+                placeholder="e.g. Company Website">
+    </div>
+
+    <br>
+
+    <div>
+        <label for="companyId">Company:</label>
+
+        <select
+                id="companyId"
+                name="companyId"
+                required>
+
+            <option value="">Select a company</option>
+
+            <option
+                    th:each="companyOption : ${companies}"
+                    th:value="${companyOption.id}"
+                    th:text="${companyOption.name}">
+            </option>
+
+        </select>
+    </div>
+
+    <br>
+
+    <button type="submit">Create Employee</button>
+
+</form>
+
+<hr>
+
+<h2>Companies</h2>
+
+<p th:if="${#lists.isEmpty(companies)}">
+    No companies have been created yet.
+</p>
+
+<div th:each="company : ${companies}">
+
+    <h3 th:text="${company.name}">Company Name</h3>
+
+    <p>
+        <strong>Industry:</strong>
+        <span th:text="${company.industry}">Industry</span>
+    </p>
+
+    <p>
+        <strong>Website:</strong>
+        <span th:text="${company.website}">Website</span>
+    </p>
+
+    <p>
+        <strong>Description:</strong>
+        <span th:text="${company.description}">Description</span>
+    </p>
+
+    <hr>
+
+</div>
+
+<hr>
+
+<h2>Employees</h2>
+
+<p th:if="${#lists.isEmpty(employees)}">
+    No employees have been created yet.
+</p>
+
+<div th:each="employee : ${employees}">
+
+    <h3 th:text="${employee.name}">
+        Employee Name
+    </h3>
+
+    <p>
+        <strong>Company:</strong>
+        <span th:text="${employee.company.name}">
+            Company
+        </span>
+    </p>
+
+    <p>
+        <strong>Role:</strong>
+        <span th:text="${employee.role}">
+            Role
+        </span>
+    </p>
+
+    <p>
+        <strong>Department:</strong>
+        <span th:text="${employee.department}">
+            Department
+        </span>
+    </p>
+
+    <p>
+        <strong>Public Interests:</strong>
+        <span th:text="${employee.publicInterests}">
+            Interests
+        </span>
+    </p>
+
+    <p>
+        <strong>Recent Public Post:</strong>
+        <span th:text="${employee.recentPost}">
+            Recent Post
+        </span>
+    </p>
+
+    <p>
+        <strong>Public Source:</strong>
+        <span th:text="${employee.visibilitySource}">
+            Source
+        </span>
+    </p>
+
+    <hr>
+
+</div>
+
 </body>
 </html>
