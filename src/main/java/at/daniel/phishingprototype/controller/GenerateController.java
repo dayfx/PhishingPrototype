@@ -4,8 +4,6 @@ import at.daniel.phishingprototype.entity.Employee;
 import at.daniel.phishingprototype.repository.EmployeeRepository;
 import at.daniel.phishingprototype.service.LlmService;
 import at.daniel.phishingprototype.service.PromptService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,9 +15,6 @@ import java.util.UUID;
 
 @Controller
 public class GenerateController {
-
-    private static final Logger logger =
-            LoggerFactory.getLogger(GenerateController.class);
 
     private final EmployeeRepository employeeRepository;
     private final PromptService promptService;
@@ -77,7 +72,6 @@ public class GenerateController {
             @RequestParam UUID employeeId,
             Model model) {
 
-        // always reloads the employee list so the dropdown is still available after generation
         model.addAttribute(
                 "employees",
                 employeeRepository.findAll()
@@ -91,7 +85,6 @@ public class GenerateController {
                         selectedEmployee
                 );
 
-        // keeps target and prompt visible whether the API request succeeds or fails
         model.addAttribute(
                 "selectedEmployee",
                 selectedEmployee
@@ -107,44 +100,36 @@ public class GenerateController {
             String generatedResult =
                     llmService.generate(prompt);
 
-            if (!generatedResult.contains("[[ACTION_SLOT]]")) {
-                throw new IllegalStateException(
-                        "The model did not include the required action placeholder."
-                );
+            if (generatedResult.contains("[[ACTION_SLOT]]")) {
+
+                generatedResult =
+                        generatedResult.replace(
+                                "[[ACTION_SLOT]]",
+                                "[SIMULATED ACTION REQUIRED HERE — NO REAL LINK]"
+                        );
             }
 
-            generatedResult = generatedResult.replace(
-                    "[[ACTION_SLOT]]",
-                    "[SIMULATED ACTION REQUIRED HERE — NO REAL LINK]"
+            String[] resultParts =
+                    splitGeneratedResult(generatedResult);
+
+            model.addAttribute(
+                    "generatedEmail",
+                    resultParts[0]
             );
 
             model.addAttribute(
-                    "generatedResult",
-                    generatedResult
+                    "personalizationNotes",
+                    resultParts[1]
             );
 
         } catch (RestClientResponseException e) {
 
-            logger.error(
-                    "LLM API request failed with HTTP status {}: {}",
-                    e.getStatusCode(),
-                    e.getResponseBodyAsString()
-            );
-
-            String errorMessage =
-                    buildApiErrorMessage(e);
-
             model.addAttribute(
                     "generationError",
-                    errorMessage
+                    buildApiErrorMessage(e)
             );
 
         } catch (Exception e) {
-
-            logger.error(
-                    "Unexpected error while generating simulation",
-                    e
-            );
 
             model.addAttribute(
                     "generationError",
@@ -168,6 +153,46 @@ public class GenerateController {
     }
 
 
+    private String[] splitGeneratedResult(
+            String generatedResult) {
+
+        String marker =
+                "PERSONALIZATION NOTES";
+
+        int markerIndex =
+                generatedResult
+                        .toUpperCase()
+                        .indexOf(marker);
+
+        if (markerIndex == -1) {
+
+            return new String[]{
+                    generatedResult.trim(),
+                    "No separate personalization analysis was returned by the model."
+            };
+        }
+
+        String email =
+                generatedResult
+                        .substring(0, markerIndex)
+                        .replace("***", "")
+                        .trim();
+
+        String notes =
+                generatedResult
+                        .substring(
+                                markerIndex + marker.length()
+                        )
+                        .replaceFirst("^\\s*#+\\s*", "")
+                        .trim();
+
+        return new String[]{
+                email,
+                notes
+        };
+    }
+
+
     private String buildApiErrorMessage(
             RestClientResponseException exception) {
 
@@ -177,19 +202,25 @@ public class GenerateController {
         return switch (statusCode) {
 
             case 429 ->
-                    "The language model API rate limit has been reached. " + "Please wait a moment and try again.";
+                    "The language model API rate limit has been reached. " +
+                            "Please wait a moment and try again.";
 
             case 503 ->
-                    "The language model is currently experiencing high demand " + "and is temporarily unavailable. Please try again in a moment.";
+                    "The language model is currently experiencing high demand " +
+                            "and is temporarily unavailable. Please try again shortly.";
 
             case 401, 403 ->
-                    "The language model API rejected the request. " + "Check the API key and configuration.";
+                    "The language model API rejected the request. " +
+                            "Please check the API key and configuration.";
 
             case 404 ->
-                    "The configured language model could not be found. " + "Check the model name in application.properties.";
+                    "The configured language model could not be found. " +
+                            "Please check the model configuration.";
 
             default ->
-                    "The language model API returned an error (HTTP " + statusCode + ").";
+                    "The language model API returned an error (HTTP "
+                            + statusCode
+                            + "). Please try again.";
         };
     }
 }

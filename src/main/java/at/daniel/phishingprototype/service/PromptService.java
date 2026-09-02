@@ -9,77 +9,119 @@ public class PromptService {
     public String buildEmployeePrompt(Employee employee) {
 
         return """
-                You are writing a fictional internal workplace email for a
-                university research prototype.
+                Write a complete, natural and professional internal workplace email
+                addressed to the employee described below.
 
-                All people, companies, posts, websites, and other information
-                supplied below are fictional.
+                Use the supplied information to make the email feel highly relevant
+                and personally appropriate to this specific employee.
 
-                Write a complete, natural, professional email addressed to the
-                fictional employee below.
+                The email should sound like a believable message that could naturally
+                occur within their workplace.
 
-                Make the email as contextually relevant and personalized as
-                possible using the supplied information.
+                PERSONALIZATION
 
-                You may naturally use:
+                Where appropriate, naturally incorporate information such as:
+
                 - the employee's name
-                - job role
-                - department
-                - company context
-                - professional interests
-                - recent public information
-                - timing information such as an upcoming vacation
-                - other supplied fictional context
+                - their role and responsibilities
+                - their department
+                - their company
+                - relevant professional interests
+                - relevant recent information
+                - relevant timing information
+                - organizational context
 
-                The email should contain:
-                - a believable subject line
-                - a natural greeting
-                - a plausible workplace reason for contacting the employee
-                - role-specific and company-specific context
-                - personalized wording based on the supplied information
-                - a natural sense of timing where relevant
-                - a professional closing
+                Do not force every detail into the email. Only use information where
+                it fits naturally and improves the relevance of the message.
 
-                IMPORTANT:
+                EMAIL PURPOSE
 
-                At the exact point where the recipient would normally be asked
-                to perform the main action, DO NOT describe the action.
+                Create a plausible internal workplace reason for contacting this
+                employee.
 
-                Instead insert this exact token on its own line:
+                Examples of suitable contexts include:
+
+                - reviewing a project document
+                - confirming project information
+                - coordinating work before an absence
+                - reviewing planning information
+                - confirming attendance or availability
+                - providing feedback on an internal document
+                - completing a normal administrative task
+
+                The context should be specifically relevant to the employee's role,
+                department and available information.
+
+                ACTION PLACEHOLDER
+
+                At the point where the employee would normally be asked to perform
+                the primary action, place this exact token on its own line:
 
                 [[ACTION_SLOT]]
 
-                Include the token exactly once.
+                Include [[ACTION_SLOT]] exactly once.
 
-                Do not include any URL, password request, credential request,
-                financial request, attachment instruction, or security-sensitive
-                action.
+                Do not replace it with an actual action.
 
-                After the email, include a section called:
+                Do not include:
+                - URLs
+                - login instructions
+                - passwords
+                - credential requests
+                - payment requests
+                - banking information
+                - authentication codes
+                - executable files
+                - software installation instructions
 
-                PERSONALIZATION NOTES
+                WRITING STYLE
 
-                In that section, briefly explain which fictional profile details
-                influenced the wording of the email.
+                The email should:
 
-                FICTIONAL COMPANY INFORMATION
+                - use natural professional language
+                - have a realistic subject line
+                - include a natural greeting
+                - have a coherent reason for contacting the employee
+                - make good use of relevant contextual information
+                - sound individually written rather than like a generic template
+                - have a professional closing
+                - be concise enough to resemble a normal workplace email
+
+                OUTPUT FORMAT
+
+                SUBJECT:
+                <subject line>
+
+                EMAIL:
+
+                <complete email>
+
+                PERSONALIZATION NOTES:
+
+                Briefly explain which supplied details influenced the email and
+                where they were used.
+
+
+                COMPANY INFORMATION
 
                 Company name: %s
                 Industry: %s
                 Website: %s
-                Description: %s
+                Company description: %s
 
-                FICTIONAL EMPLOYEE INFORMATION
+
+                EMPLOYEE INFORMATION
 
                 Name: %s
                 Role: %s
                 Department: %s
 
-                SIMULATED PUBLIC INFORMATION
+
+                ADDITIONAL CONTEXT
 
                 Interests: %s
-                Recent public post: %s
-                Public source: %s
+                Recent public information: %s
+                Information source: %s
                 """.formatted(
                 safe(employee.getCompany().getName()),
                 safe(employee.getCompany().getIndustry()),
@@ -93,6 +135,7 @@ public class PromptService {
                 safe(employee.getVisibilitySource())
         );
     }
+
 
     private String safe(String value) {
 

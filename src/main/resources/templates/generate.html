@@ -1,236 +1,401 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Generate Simulation</title>
+
+    <link rel="stylesheet" th:href="@{/app.css}">
 </head>
 
 <body>
 
-<header>
-    <h1>Generate Educational Simulation</h1>
+<nav class="navbar">
+    <div class="navbar-inner">
 
-    <p>
-        Select a fictional employee to inspect the simulated publicly
-        available information that will be provided to the language model.
-    </p>
+        <a class="brand" th:href="@{/}">Phishing Lab</a>
 
-    <p>
-        <a th:href="@{/}">Back to Home</a>
-    </p>
-</header>
+        <div class="nav-links">
+            <a th:href="@{/}">Data</a>
+            <a class="active" th:href="@{/generate}">Generator</a>
+        </div>
 
-<hr>
+    </div>
+</nav>
 
+<main class="page">
 
-<main>
-    <section>
+    <div class="container stack">
 
-        <h2>Select Target</h2>
+        <header class="page-header">
 
-        <p th:if="${#lists.isEmpty(employees)}">
-            No employees exist yet. Create an employee first.
-        </p>
+            <span class="label">
+                Research Prototype
+            </span>
 
-        <form
-                th:unless="${#lists.isEmpty(employees)}"
-                th:action="@{/generate}"
-                method="get">
+            <h1>
+                AI Personalization Simulation
+            </h1>
 
-            <div>
-                <label for="employeeId">
-                    Employee:
-                </label>
+            <p>
+                Select a fictional employee and use fictional publicly available information to generate a personalized Phishing Email.
+            </p>
 
-                <select
-                        id="employeeId"
-                        name="employeeId"
-                        required>
+        </header>
 
-                    <option value="">
-                        Select an employee
-                    </option>
+        <!-- Employee Selection -->
 
-                    <option
-                            th:each="employee : ${employees}"
-                            th:value="${employee.id}"
-                            th:text="${employee.name + ' — ' + employee.company.name}"
-                            th:selected="${selectedEmployee != null
-                                and selectedEmployee.id.equals(employee.id)}">
-                    </option>
+        <section class="card">
 
-                </select>
+            <div class="card-header">
+
+                <h2>
+                    Select Target
+                </h2>
+
+                <p>
+                    Choose one of the fictional employees stored in the prototype.
+                </p>
+
             </div>
 
-            <br>
-
-            <button type="submit">
-                Confirm
-            </button>
-
-        </form>
-
-    </section>
-
-    <div th:if="${selectedEmployee != null}">
-
-        <hr>
-
-        <!-- Selection -->
-
-        <section>
-
-            <h2>Selected Target</h2>
-
-            <p>
-                <strong>Name:</strong>
-                <span th:text="${selectedEmployee.name}">
-                    Employee Name
-                </span>
-            </p>
-
-            <p>
-                <strong>Company:</strong>
-                <span th:text="${selectedEmployee.company.name}">
-                    Company
-                </span>
-            </p>
-
-            <p>
-                <strong>Industry:</strong>
-                <span th:text="${selectedEmployee.company.industry}">
-                    Industry
-                </span>
-            </p>
-
-            <p>
-                <strong>Role:</strong>
-                <span th:text="${selectedEmployee.role}">
-                    Role
-                </span>
-            </p>
-
-            <p>
-                <strong>Department:</strong>
-                <span th:text="${selectedEmployee.department}">
-                    Department
-                </span>
-            </p>
-
-        </section>
-
-        <!-- Simulated Info -->
-
-        <section>
-
-            <h3>Simulated Public Information</h3>
-
-            <p>
-                <strong>Public Interests:</strong>
-                <span th:text="${selectedEmployee.publicInterests}">
-                    Interests
-                </span>
-            </p>
-
-            <p>
-                <strong>Recent Public Post:</strong>
-                <span th:text="${selectedEmployee.recentPost}">
-                    Recent Post
-                </span>
-            </p>
-
-            <p>
-                <strong>Public Source:</strong>
-                <span th:text="${selectedEmployee.visibilitySource}">
-                    Source
-                </span>
-            </p>
-
-        </section>
-
-        <!-- Preview -->
-
-        <section th:if="${promptPreview != null}">
-
-            <hr>
-
-            <h2>LLM Prompt Preview</h2>
-
-            <p>
-                The following text represents the information and instructions
-                that will be sent to the language model.
-            </p>
-
-            <pre th:text="${promptPreview}"></pre>
-
-        </section>
-
-
-        <!-- Generation -->
-
-        <section>
-
-            <hr>
-
-            <h2>Generate Simulation</h2>
-
-            <p>
-                The fictional information above will be sent to the
-                language model to create an educational phishing simulation.
+            <p th:if="${#lists.isEmpty(employees)}">
+                No employees exist yet.
+                Create an employee on the Data page first.
             </p>
 
             <form
-                    th:action="@{/generate/run}"
-                    method="post">
+                    th:unless="${#lists.isEmpty(employees)}"
+                    th:action="@{/generate}"
+                    method="get">
 
-                <input
-                        type="hidden"
-                        name="employeeId"
-                        th:value="${selectedEmployee.id}">
+                <div class="form-group">
+
+                    <label for="employeeId">
+                        Fictional employee
+                    </label>
+
+                    <select
+                            id="employeeId"
+                            name="employeeId"
+                            required>
+
+                        <option value="">
+                            Select an employee
+                        </option>
+
+                        <option
+                                th:each="employee : ${employees}"
+                                th:value="${employee.id}"
+                                th:text="${employee.name + ' — ' + employee.company.name}"
+                                th:selected="${selectedEmployee != null and selectedEmployee.id.equals(employee.id)}">
+                        </option>
+
+                    </select>
+
+                </div>
 
                 <button type="submit">
-                    Generate Simulation
+                    Load Profile
                 </button>
 
             </form>
 
         </section>
 
-        <!-- Error Display -->
+        <!-- Selected Employee Card -->
 
-        <section th:if="${generationError != null}">
+        <div class="stack" th:if="${selectedEmployee != null}">
 
-            <hr>
 
-            <h2>Generation Error</h2>
+            <section class="card">
 
-            <p th:text="${generationError}">
-                The simulation could not be generated.
-            </p>
+                <div class="card-header">
 
-        </section>
+                    <span class="label">
+                        Fictional Target
+                    </span>
 
-        <!-- Result  -->
+                    <h2 th:text="${selectedEmployee.name}">
+                        Employee
+                    </h2>
 
-        <section th:if="${generatedResult != null}">
+                    <p>
+                        Simulated profile information available to the model.
+                    </p>
 
-            <hr>
+                </div>
 
-            <h2>Generated Educational Simulation</h2>
 
-            <p>
-                The following output was generated using the fictional
-                information shown above.
-            </p>
+                <div class="info-grid">
 
-            <pre th:text="${generatedResult}"></pre>
+                    <div class="info-item">
 
-        </section>
+                        <strong>
+                            Company
+                        </strong>
+
+                        <span th:text="${selectedEmployee.company.name}">
+                            Company
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <strong>
+                            Industry
+                        </strong>
+
+                        <span th:text="${selectedEmployee.company.industry}">
+                            Industry
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <strong>
+                            Role
+                        </strong>
+
+                        <span th:text="${selectedEmployee.role}">
+                            Role
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <strong>
+                            Department
+                        </strong>
+
+                        <span th:text="${selectedEmployee.department}">
+                            Department
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <strong>
+                            Public Interests
+                        </strong>
+
+                        <span th:text="${selectedEmployee.publicInterests}">
+                            Interests
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <strong>
+                            Public Source
+                        </strong>
+
+                        <span th:text="${selectedEmployee.visibilitySource}">
+                            Source
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="info-item">
+
+                    <strong>
+                        Recent Public Post
+                    </strong>
+
+                    <span th:text="${selectedEmployee.recentPost}">
+                        Recent post
+                    </span>
+
+                </div>
+
+            </section>
+
+            <!-- Generate Part -->
+
+            <section class="card">
+
+                <div class="card-header">
+
+                    <h2>
+                        Generate Simulation
+                    </h2>
+
+                    <p>
+                        The fictional information above will be sent to the configured language model.
+                    </p>
+
+                </div>
+
+                <form
+                        id="generationForm"
+                        th:action="@{/generate/run}"
+                        method="post">
+
+                    <input
+                            type="hidden"
+                            name="employeeId"
+                            th:value="${selectedEmployee.id}">
+
+                    <button
+                            id="generateButton"
+                            type="submit">
+
+                        Generate Simulation
+
+                    </button>
+
+                </form>
+
+            </section>
+
+            <!-- Error -->
+
+            <div
+                    class="error-box"
+                    th:if="${generationError != null}">
+
+                <strong>
+                    Generation failed
+                </strong>
+
+                <p
+                        style="margin: 0.4rem 0 0;"
+                        th:text="${generationError}">
+                    Generation error
+                </p>
+
+            </div>
+
+            <!-- Generated Mail -->
+
+            <section
+                    class="card"
+                    th:if="${generatedEmail != null}">
+
+                <div class="card-header">
+
+                    <span class="label">
+                        Generated Result
+                    </span>
+
+                    <h2>
+                        Simulated Email
+                    </h2>
+
+                    <p>
+                        Generated from fictional profile information only.
+                    </p>
+
+                </div>
+
+
+                <div class="email-container">
+
+                    <pre
+                            class="email-content"
+                            th:text="${generatedEmail}">
+                    </pre>
+
+                </div>
+
+            </section>
+
+            <!-- Personal Details Analysis (by LLM)                -->
+
+            <details
+                    th:if="${personalizationNotes != null}">
+
+                <summary>
+                    Personalization Analysis
+                </summary>
+
+                <div class="details-content">
+
+                    <p>
+                        The model identified the following fictional information as relevant to its personalization choices.
+                    </p>
+
+                    <pre
+                            class="prompt-content"
+                            th:text="${personalizationNotes}">
+                    </pre>
+
+                </div>
+
+            </details>
+
+
+            <!-- Prompt Details -->
+
+            <details
+                    th:if="${promptPreview != null}">
+
+                <summary>
+                    LLM Prompt
+                </summary>
+
+                <div class="details-content">
+
+                    <p>
+                        This is the actual prompt sent to the language model.
+                    </p>
+
+                    <pre
+                            class="prompt-content"
+                            th:text="${promptPreview}">
+                    </pre>
+
+                </div>
+
+            </details>
+
+        </div>
 
     </div>
 
 </main>
+
+<!-- Disable Button Script -->
+
+<script>
+
+    const generationForm =
+        document.getElementById("generationForm");
+
+    const generateButton =
+        document.getElementById("generateButton");
+
+
+    if (generationForm && generateButton) {
+
+        generationForm.addEventListener(
+            "submit",
+            function () {
+
+                generateButton.disabled = true;
+
+                generateButton.textContent =
+                    "Generating simulation...";
+            }
+        );
+    }
+
+</script>
 
 </body>
 
