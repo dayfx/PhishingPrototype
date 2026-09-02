@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Generator Simulation</title>
+</head>
+
+<body>
+
+<h1>Generator Page</h1>
+
+<p>
+    Select a fictional employee to inspect the simulated publicly
+    available information which will be provided to the language model.
+</p>
+
+<p>
+    <a th:href="@{/}">Back to Home</a>
+</p>
+
+<hr>
+
+<h2>Select Target</h2>
+
+<p th:if="${#lists.isEmpty(employees)}">
+    No employees exist yet. Create an employee first.
+</p>
+
+<form
+        th:unless="${#lists.isEmpty(employees)}"
+        th:action="@{/generate}"
+        method="get">
+
+    <div>
+        <label for="employeeId">Employee:</label>
+
+        <select
+                id="employeeId"
+                name="employeeId"
+                required>
+
+            <option value="">
+                Select an employee
+            </option>
+
+            <option
+                    th:each="employee : ${employees}"
+                    th:value="${employee.id}"
+                    th:text="${employee.name + ' — ' + employee.company.name}"
+                    th:selected="${selectedEmployee != null
+                        and selectedEmployee.id.equals(employee.id)}">
+            </option>
+
+        </select>
+    </div>
+
+    <br>
+
+    <button type="submit">
+        Confirm
+    </button>
+
+</form>
+
+
+<div th:if="${selectedEmployee != null}">
+
+    <hr>
+
+    <h2>Selected Target</h2>
+
+    <p>
+        <strong>Name:</strong>
+        <span th:text="${selectedEmployee.name}">
+            Employee Name
+        </span>
+    </p>
+
+    <p>
+        <strong>Company:</strong>
+        <span th:text="${selectedEmployee.company.name}">
+            Company
+        </span>
+    </p>
+
+    <p>
+        <strong>Industry:</strong>
+        <span th:text="${selectedEmployee.company.industry}">
+            Industry
+        </span>
+    </p>
+
+    <p>
+        <strong>Role:</strong>
+        <span th:text="${selectedEmployee.role}">
+            Role
+        </span>
+    </p>
+
+    <p>
+        <strong>Department:</strong>
+        <span th:text="${selectedEmployee.department}">
+            Department
+        </span>
+    </p>
+
+    <h3>Simulated Public Information</h3>
+
+    <p>
+        <strong>Public Interests:</strong>
+        <span th:text="${selectedEmployee.publicInterests}">
+            Interests
+        </span>
+    </p>
+
+    <p>
+        <strong>Recent Public Post:</strong>
+        <span th:text="${selectedEmployee.recentPost}">
+            Recent Post
+        </span>
+    </p>
+
+    <p>
+        <strong>Public Source:</strong>
+        <span th:text="${selectedEmployee.visibilitySource}">
+            Source
+        </span>
+    </p>
+
+</div>
+
+</body>
+
+</html>
