@@ -1,9 +1,12 @@
 package at.daniel.phishingprototype.controller;
 
 import at.daniel.phishingprototype.entity.Employee;
+import at.daniel.phishingprototype.entity.GenerationRecord;
 import at.daniel.phishingprototype.repository.EmployeeRepository;
+import at.daniel.phishingprototype.repository.GenerationRecordRepository;
 import at.daniel.phishingprototype.service.LlmService;
 import at.daniel.phishingprototype.service.PromptService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,18 +20,25 @@ import java.util.UUID;
 public class GenerateController {
 
     private final EmployeeRepository employeeRepository;
+    private final GenerationRecordRepository generationRecordRepository;
     private final PromptService promptService;
     private final LlmService llmService;
+
+    private final String model;
 
 
     public GenerateController(
             EmployeeRepository employeeRepository,
+            GenerationRecordRepository generationRecordRepository,
             PromptService promptService,
-            LlmService llmService) {
+            LlmService llmService,
+            @Value("${gemini.model}") String model) {
 
         this.employeeRepository = employeeRepository;
+        this.generationRecordRepository = generationRecordRepository;
         this.promptService = promptService;
         this.llmService = llmService;
+        this.model = model;
     }
 
 
@@ -133,12 +143,57 @@ public class GenerateController {
 
             model.addAttribute(
                     "generationError",
-                    "An unexpected error occurred while generating the simulation. " +
-                            "Please try again."
+                    "An unexpected error occurred while generating the simulation. "
+                            + "Please try again."
             );
         }
 
         return "generate";
+    }
+
+
+    @PostMapping("/generate/save")
+    public String saveGeneration(
+            @RequestParam UUID employeeId,
+            @RequestParam String generatedEmail,
+            @RequestParam(defaultValue = "") String personalizationNotes) {
+
+        Employee employee =
+                getEmployee(employeeId);
+
+        GenerationRecord record =
+                new GenerationRecord();
+
+        record.setEmployee(
+                employee
+        );
+
+        record.setGeneratedEmail(
+                generatedEmail
+        );
+
+        record.setPersonalizationNotes(
+                personalizationNotes
+        );
+
+        /*
+         * The prompt is deterministic from the employee profile,
+         * so rebuild it on the server instead of trusting an HTML field.
+         */
+        record.setPrompt(
+                promptService.buildEmployeePrompt(employee)
+        );
+
+        record.setModel(
+                model
+        );
+
+        generationRecordRepository.save(
+                record
+        );
+
+        return "redirect:/history?recordId="
+                + record.getId();
     }
 
 
@@ -183,7 +238,10 @@ public class GenerateController {
                         .substring(
                                 markerIndex + marker.length()
                         )
-                        .replaceFirst("^\\s*#+\\s*", "")
+                        .replaceFirst(
+                                "^\\s*[:#*\\-]*\\s*",
+                                ""
+                        )
                         .trim();
 
         return new String[]{
@@ -202,20 +260,20 @@ public class GenerateController {
         return switch (statusCode) {
 
             case 429 ->
-                    "The language model API rate limit has been reached. " +
-                            "Please wait a moment and try again.";
+                    "The language model API rate limit has been reached. "
+                            + "Please wait a moment and try again.";
 
             case 503 ->
-                    "The language model is currently experiencing high demand " +
-                            "and is temporarily unavailable. Please try again shortly.";
+                    "The language model is currently experiencing high demand "
+                            + "and is temporarily unavailable. Please try again shortly.";
 
             case 401, 403 ->
-                    "The language model API rejected the request. " +
-                            "Please check the API key and configuration.";
+                    "The language model API rejected the request. "
+                            + "Please check the API key and configuration.";
 
             case 404 ->
-                    "The configured language model could not be found. " +
-                            "Please check the model configuration.";
+                    "The configured language model could not be found. "
+                            + "Please check the model configuration.";
 
             default ->
                     "The language model API returned an error (HTTP "

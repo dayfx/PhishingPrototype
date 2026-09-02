@@ -38,10 +38,8 @@ public class Employee {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-
     public Employee() {
     }
-
 
     public UUID getId() {
         return id;

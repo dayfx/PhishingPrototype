@@ -27,10 +27,8 @@ public class Company {
     @Column(length = 2000)
     private String description;
 
-
     public Company() {
     }
-
 
     public UUID getId() {
         return id;

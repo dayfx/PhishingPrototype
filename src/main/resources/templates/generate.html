@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +20,7 @@
         <div class="nav-links">
             <a th:href="@{/}">Data</a>
             <a class="active" th:href="@{/generate}">Generator</a>
+            <a th:href="@{/history}">History</a>
         </div>
 
     </div>
@@ -39,7 +41,8 @@
             </h1>
 
             <p>
-                Select a fictional employee and use fictional publicly available information to generate a personalized Phishing Email.
+                Select a fictional employee and use fictional publicly available
+                information to generate a personalized Phishing Email.
             </p>
 
         </header>
@@ -89,7 +92,8 @@
                                 th:each="employee : ${employees}"
                                 th:value="${employee.id}"
                                 th:text="${employee.name + ' — ' + employee.company.name}"
-                                th:selected="${selectedEmployee != null and selectedEmployee.id.equals(employee.id)}">
+                                th:selected="${selectedEmployee != null
+                                    and selectedEmployee.id.equals(employee.id)}">
                         </option>
 
                     </select>
@@ -225,6 +229,7 @@
 
             </section>
 
+
             <!-- Generate Part -->
 
             <section class="card">
@@ -263,6 +268,7 @@
 
             </section>
 
+
             <!-- Error -->
 
             <div
@@ -280,6 +286,7 @@
                 </p>
 
             </div>
+
 
             <!-- Generated Mail -->
 
@@ -313,12 +320,47 @@
 
                 </div>
 
+
+                <!-- Save Generation -->
+
+                <form
+                        th:action="@{/generate/save}"
+                        method="post"
+                        style="margin-top: 1rem;">
+
+                    <input
+                            type="hidden"
+                            name="employeeId"
+                            th:value="${selectedEmployee.id}">
+
+                    <textarea
+                            hidden
+                            name="generatedEmail"
+                            th:text="${generatedEmail}">
+                    </textarea>
+
+                    <textarea
+                            hidden
+                            name="personalizationNotes"
+                            th:text="${personalizationNotes}">
+                    </textarea>
+
+                    <button
+                            class="button-secondary"
+                            type="submit">
+
+                        Save Generation
+
+                    </button>
+
+                </form>
+
             </section>
 
-            <!-- Personal Details Analysis (by LLM)                -->
 
-            <details
-                    th:if="${personalizationNotes != null}">
+            <!-- Personal Details Analysis (by LLM) -->
+
+            <details th:if="${personalizationNotes != null}">
 
                 <summary>
                     Personalization Analysis
@@ -327,7 +369,8 @@
                 <div class="details-content">
 
                     <p>
-                        The model identified the following fictional information as relevant to its personalization choices.
+                        The model identified the following fictional information
+                        as relevant to its personalization choices.
                     </p>
 
                     <pre
@@ -342,8 +385,7 @@
 
             <!-- Prompt Details -->
 
-            <details
-                    th:if="${promptPreview != null}">
+            <details th:if="${promptPreview != null}">
 
                 <summary>
                     LLM Prompt
@@ -369,6 +411,7 @@
     </div>
 
 </main>
+
 
 <!-- Disable Button Script -->
 

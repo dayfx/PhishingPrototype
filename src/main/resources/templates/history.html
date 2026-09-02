@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+  <title>Generation History</title>
+
+  <link
+          rel="stylesheet"
+          th:href="@{/app.css}">
+
+</head>
+
+
+<body>
+
+<nav class="navbar">
+
+  <div class="navbar-inner">
+
+    <a
+            class="brand"
+            th:href="@{/}">
+      Phishing Lab
+    </a>
+
+
+    <div class="nav-links">
+
+      <a th:href="@{/}">
+        Data
+      </a>
+
+      <a th:href="@{/generate}">
+        Generator
+      </a>
+
+      <a
+              class="active"
+              th:href="@{/history}">
+        History
+      </a>
+
+    </div>
+
+  </div>
+
+</nav>
+
+
+<main class="page">
+
+  <div class="container stack">
+
+
+    <header class="page-header">
+
+            <span class="label">
+                Research Records
+            </span>
+
+      <h1>
+        Generation History
+      </h1>
+
+      <p>
+        Previously saved simulation outputs generated
+        from fictional employee profiles.
+      </p>
+
+    </header>
+
+
+    <p th:if="${#lists.isEmpty(records)}">
+      No generations have been saved yet.
+    </p>
+
+
+    <!-- RECORD LIST -->
+
+    <section
+            th:unless="${#lists.isEmpty(records)}">
+
+
+      <div class="grid">
+
+
+        <article
+                class="card"
+                th:each="record : ${records}">
+
+
+          <div class="card-header">
+
+            <h2 th:text="${record.employee.name}">
+              Employee
+            </h2>
+
+
+            <p>
+
+                            <span th:text="${record.employee.company.name}">
+                                Company
+                            </span>
+
+              <span>
+                                ·
+                            </span>
+
+              <span th:text="${record.model}">
+                                Model
+                            </span>
+
+            </p>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <strong>
+              Role
+            </strong>
+
+            <span th:text="${record.employee.role}">
+                            Role
+                        </span>
+
+          </div>
+
+
+          <div
+                  class="info-item"
+                  style="margin-top: 1rem;">
+
+            <strong>
+              Generated
+            </strong>
+
+            <span th:text="${record.createdAt}">
+                            Date
+                        </span>
+
+          </div>
+
+
+          <div style="margin-top: 1rem;">
+
+            <a
+                    class="button button-secondary"
+                    th:href="@{/history(recordId=${record.id})}">
+
+              View Generation
+
+            </a>
+
+          </div>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <!-- SELECTED RECORD -->
+
+    <div
+            class="stack"
+            th:if="${selectedRecord != null}">
+
+
+      <hr>
+
+
+      <header class="page-header">
+
+                <span class="label">
+                    Saved Simulation
+                </span>
+
+
+        <h2 th:text="${selectedRecord.employee.name}">
+          Employee
+        </h2>
+
+
+        <p>
+
+                    <span th:text="${selectedRecord.employee.role}">
+                        Role
+                    </span>
+
+          <span>
+                        ·
+                    </span>
+
+          <span th:text="${selectedRecord.employee.company.name}">
+                        Company
+                    </span>
+
+        </p>
+
+      </header>
+
+
+      <!-- EMAIL -->
+
+      <section class="card">
+
+
+        <div class="card-header">
+
+                    <span class="label">
+                        Generated Result
+                    </span>
+
+          <h2>
+            Simulated Email
+          </h2>
+
+        </div>
+
+
+        <div class="email-container">
+
+                    <pre
+                            class="email-content"
+                            th:text="${selectedRecord.generatedEmail}">
+                    </pre>
+
+        </div>
+
+      </section>
+
+      <!-- Notes-->
+
+      <details>
+
+        <summary>
+          Personalization Analysis
+        </summary>
+
+        <div class="details-content">
+
+                    <pre class="prompt-content" th:text="${selectedRecord.personalizationNotes}"></pre>
+
+        </div>
+
+      </details>
+
+      <!-- Details-->
+
+      <details>
+
+        <summary>LLM Prompt</summary>
+
+        <div class="details-content">
+
+          <p>
+
+            Model:
+
+            <strong th:text="${selectedRecord.model}">
+              Model
+            </strong>
+
+          </p>
+
+          <pre class="prompt-content" th:text="${selectedRecord.prompt}"></pre>
+
+        </div>
+
+      </details>
+
+    </div>
+
+  </div>
+
+</main>
+
+</body>
+
+</html>

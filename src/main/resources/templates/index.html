@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +20,7 @@
         <div class="nav-links">
             <a class="active" th:href="@{/}">Data</a>
             <a th:href="@{/generate}">Generator</a>
+            <a th:href="@{/history}">History</a>
         </div>
 
     </div>
@@ -39,10 +41,13 @@
             </h1>
 
             <p>
-                Create fictional companies and employees to simulate publicly available information. No real personal information required.
+                Create fictional companies and employees to simulate publicly available information.
+                No real personal information required.
             </p>
 
-            <a class="button" th:href="@{/generate}">Open Generator</a>
+            <a class="button" th:href="@{/generate}">
+                Open Generator
+            </a>
 
         </header>
 
@@ -60,7 +65,11 @@
 
                 </div>
 
-                <form th:action="@{/companies}" th:object="${company}" method="post">
+                <form
+                        th:action="@{/companies}"
+                        th:object="${company}"
+                        method="post">
+
                     <div class="form-group">
 
                         <label for="name">
@@ -73,6 +82,7 @@
                                 th:field="*{name}"
                                 placeholder="Example Company"
                                 required>
+
                     </div>
 
                     <div class="form-group">
@@ -117,7 +127,9 @@
 
                     </div>
 
-                    <button type="submit">Create Company</button>
+                    <button type="submit">
+                        Create Company
+                    </button>
 
                 </form>
 
@@ -135,7 +147,10 @@
 
                 </div>
 
-                <form th:action="@{/employees}" th:object="${employee}" method="post">
+                <form
+                        th:action="@{/employees}"
+                        th:object="${employee}"
+                        method="post">
 
                     <div class="form-group">
 
@@ -247,7 +262,6 @@
 
                     </div>
 
-
                     <button type="submit">
                         Create Employee
                     </button>
@@ -258,7 +272,7 @@
 
         </div>
 
-        <!-- Companies-->
+        <!-- Companies -->
 
         <section>
 
@@ -272,20 +286,29 @@
 
             </div>
 
-            <p th:if="${#lists.isEmpty(companies)}">No companies created yet.</p>
+            <p th:if="${#lists.isEmpty(companies)}">
+                No companies created yet.
+            </p>
 
-            <div class="grid" th:unless="${#lists.isEmpty(companies)}">
+            <div
+                    class="grid"
+                    th:unless="${#lists.isEmpty(companies)}">
 
-                <article class="card" th:each="company : ${companies}">
+                <article
+                        class="card"
+                        th:each="company : ${companies}">
 
                     <div class="card-header">
 
-                        <h2 th:text="${company.name}">Company</h2>
+                        <h2 th:text="${company.name}">
+                            Company
+                        </h2>
 
-                        <p th:text="${company.industry}">Industry</p>
+                        <p th:text="${company.industry}">
+                            Industry
+                        </p>
 
                     </div>
-
 
                     <div class="info-item">
 
@@ -325,30 +348,44 @@
 
             <div class="page-header">
 
-                <span class="label">Dataset</span>
+                <span class="label">
+                    Dataset
+                </span>
 
                 <h2>Employees</h2>
 
             </div>
 
-            <p th:if="${#lists.isEmpty(employees)}">No employees have been created yet.</p>
+            <p th:if="${#lists.isEmpty(employees)}">
+                No employees have been created yet.
+            </p>
 
-            <div class="grid" th:unless="${#lists.isEmpty(employees)}">
+            <div
+                    class="grid"
+                    th:unless="${#lists.isEmpty(employees)}">
 
-                <article class="card" th:each="employee : ${employees}">
+                <article
+                        class="card"
+                        th:each="employee : ${employees}">
 
                     <div class="card-header">
 
-                        <h2 th:text="${employee.name}">Employee</h2>
+                        <h2 th:text="${employee.name}">
+                            Employee
+                        </h2>
 
                         <p>
+
                             <span th:text="${employee.role}">
                                 Role
                             </span>
 
                             <span>·</span>
 
-                            <span th:text="${employee.company.name}">Company</span>
+                            <span th:text="${employee.company.name}">
+                                Company
+                            </span>
+
                         </p>
 
                     </div>
