@@ -130,6 +130,21 @@
 
 </div>
 
+<div th:if="${promptPreview != null}">
+
+    <hr>
+
+    <h2>LLM Prompt Preview</h2>
+
+    <p>
+        The following text represents the information that will be
+        sent to the language model.
+    </p>
+
+    <pre th:text="${promptPreview}"></pre>
+
+</div>
+
 </body>
 
 </html>
