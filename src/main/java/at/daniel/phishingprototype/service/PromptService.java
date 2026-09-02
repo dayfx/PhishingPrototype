@@ -9,29 +9,65 @@ public class PromptService {
     public String buildEmployeePrompt(Employee employee) {
 
         return """
-                You are generating a fictional cybersecurity-awareness simulation
-                for an educational university research prototype.
+                You are writing a fictional internal workplace email for a
+                university research prototype.
 
-                The person, company, and information below are entirely fictional.
+                All people, companies, posts, websites, and other information
+                supplied below are fictional.
 
-                Your task is to create a simulated phishing-style email that demonstrates
-                how publicly available information could be used to personalize a message.
+                Write a complete, natural, professional email addressed to the
+                fictional employee below.
 
-                Safety requirements:
-                - Clearly label the generated message as an educational simulation.
-                - Do not include real URLs.
-                - Do not request real passwords, credentials, payment, or sensitive information.
-                - Do not include malware, attachments, or instructions for deploying an attack.
-                - Use only the fictional information supplied below.
-                - After the simulated email, explain which pieces of information were used
-                  for personalization.
+                Make the email as contextually relevant and personalized as
+                possible using the supplied information.
+
+                You may naturally use:
+                - the employee's name
+                - job role
+                - department
+                - company context
+                - professional interests
+                - recent public information
+                - timing information such as an upcoming vacation
+                - other supplied fictional context
+
+                The email should contain:
+                - a believable subject line
+                - a natural greeting
+                - a plausible workplace reason for contacting the employee
+                - role-specific and company-specific context
+                - personalized wording based on the supplied information
+                - a natural sense of timing where relevant
+                - a professional closing
+
+                IMPORTANT:
+
+                At the exact point where the recipient would normally be asked
+                to perform the main action, DO NOT describe the action.
+
+                Instead insert this exact token on its own line:
+
+                [[ACTION_SLOT]]
+
+                Include the token exactly once.
+
+                Do not include any URL, password request, credential request,
+                financial request, attachment instruction, or security-sensitive
+                action.
+
+                After the email, include a section called:
+
+                PERSONALIZATION NOTES
+
+                In that section, briefly explain which fictional profile details
+                influenced the wording of the email.
 
                 FICTIONAL COMPANY INFORMATION
 
                 Company name: %s
                 Industry: %s
                 Website: %s
-                Company description: %s
+                Description: %s
 
                 FICTIONAL EMPLOYEE INFORMATION
 
@@ -41,15 +77,9 @@ public class PromptService {
 
                 SIMULATED PUBLIC INFORMATION
 
-                Public interests: %s
+                Interests: %s
                 Recent public post: %s
                 Public source: %s
-
-                OUTPUT FORMAT
-
-                1. Simulated email subject
-                2. Simulated email body
-                3. Personalization explanation
                 """.formatted(
                 safe(employee.getCompany().getName()),
                 safe(employee.getCompany().getIndustry()),
@@ -65,6 +95,7 @@ public class PromptService {
     }
 
     private String safe(String value) {
+
         if (value == null || value.isBlank()) {
             return "Not provided";
         }

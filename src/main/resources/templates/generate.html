@@ -1,149 +1,236 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
-    <title>Generator Simulation</title>
+    <title>Generate Simulation</title>
 </head>
 
 <body>
 
-<h1>Generator Page</h1>
+<header>
+    <h1>Generate Educational Simulation</h1>
 
-<p>
-    Select a fictional employee to inspect the simulated publicly
-    available information which will be provided to the language model.
-</p>
+    <p>
+        Select a fictional employee to inspect the simulated publicly
+        available information that will be provided to the language model.
+    </p>
 
-<p>
-    <a th:href="@{/}">Back to Home</a>
-</p>
+    <p>
+        <a th:href="@{/}">Back to Home</a>
+    </p>
+</header>
 
 <hr>
 
-<h2>Select Target</h2>
 
-<p th:if="${#lists.isEmpty(employees)}">
-    No employees exist yet. Create an employee first.
-</p>
+<main>
+    <section>
 
-<form
-        th:unless="${#lists.isEmpty(employees)}"
-        th:action="@{/generate}"
-        method="get">
+        <h2>Select Target</h2>
 
-    <div>
-        <label for="employeeId">Employee:</label>
+        <p th:if="${#lists.isEmpty(employees)}">
+            No employees exist yet. Create an employee first.
+        </p>
 
-        <select
-                id="employeeId"
-                name="employeeId"
-                required>
+        <form
+                th:unless="${#lists.isEmpty(employees)}"
+                th:action="@{/generate}"
+                method="get">
 
-            <option value="">
-                Select an employee
-            </option>
+            <div>
+                <label for="employeeId">
+                    Employee:
+                </label>
 
-            <option
-                    th:each="employee : ${employees}"
-                    th:value="${employee.id}"
-                    th:text="${employee.name + ' — ' + employee.company.name}"
-                    th:selected="${selectedEmployee != null
-                        and selectedEmployee.id.equals(employee.id)}">
-            </option>
+                <select
+                        id="employeeId"
+                        name="employeeId"
+                        required>
 
-        </select>
+                    <option value="">
+                        Select an employee
+                    </option>
+
+                    <option
+                            th:each="employee : ${employees}"
+                            th:value="${employee.id}"
+                            th:text="${employee.name + ' — ' + employee.company.name}"
+                            th:selected="${selectedEmployee != null
+                                and selectedEmployee.id.equals(employee.id)}">
+                    </option>
+
+                </select>
+            </div>
+
+            <br>
+
+            <button type="submit">
+                Confirm
+            </button>
+
+        </form>
+
+    </section>
+
+    <div th:if="${selectedEmployee != null}">
+
+        <hr>
+
+        <!-- Selection -->
+
+        <section>
+
+            <h2>Selected Target</h2>
+
+            <p>
+                <strong>Name:</strong>
+                <span th:text="${selectedEmployee.name}">
+                    Employee Name
+                </span>
+            </p>
+
+            <p>
+                <strong>Company:</strong>
+                <span th:text="${selectedEmployee.company.name}">
+                    Company
+                </span>
+            </p>
+
+            <p>
+                <strong>Industry:</strong>
+                <span th:text="${selectedEmployee.company.industry}">
+                    Industry
+                </span>
+            </p>
+
+            <p>
+                <strong>Role:</strong>
+                <span th:text="${selectedEmployee.role}">
+                    Role
+                </span>
+            </p>
+
+            <p>
+                <strong>Department:</strong>
+                <span th:text="${selectedEmployee.department}">
+                    Department
+                </span>
+            </p>
+
+        </section>
+
+        <!-- Simulated Info -->
+
+        <section>
+
+            <h3>Simulated Public Information</h3>
+
+            <p>
+                <strong>Public Interests:</strong>
+                <span th:text="${selectedEmployee.publicInterests}">
+                    Interests
+                </span>
+            </p>
+
+            <p>
+                <strong>Recent Public Post:</strong>
+                <span th:text="${selectedEmployee.recentPost}">
+                    Recent Post
+                </span>
+            </p>
+
+            <p>
+                <strong>Public Source:</strong>
+                <span th:text="${selectedEmployee.visibilitySource}">
+                    Source
+                </span>
+            </p>
+
+        </section>
+
+        <!-- Preview -->
+
+        <section th:if="${promptPreview != null}">
+
+            <hr>
+
+            <h2>LLM Prompt Preview</h2>
+
+            <p>
+                The following text represents the information and instructions
+                that will be sent to the language model.
+            </p>
+
+            <pre th:text="${promptPreview}"></pre>
+
+        </section>
+
+
+        <!-- Generation -->
+
+        <section>
+
+            <hr>
+
+            <h2>Generate Simulation</h2>
+
+            <p>
+                The fictional information above will be sent to the
+                language model to create an educational phishing simulation.
+            </p>
+
+            <form
+                    th:action="@{/generate/run}"
+                    method="post">
+
+                <input
+                        type="hidden"
+                        name="employeeId"
+                        th:value="${selectedEmployee.id}">
+
+                <button type="submit">
+                    Generate Simulation
+                </button>
+
+            </form>
+
+        </section>
+
+        <!-- Error Display -->
+
+        <section th:if="${generationError != null}">
+
+            <hr>
+
+            <h2>Generation Error</h2>
+
+            <p th:text="${generationError}">
+                The simulation could not be generated.
+            </p>
+
+        </section>
+
+        <!-- Result  -->
+
+        <section th:if="${generatedResult != null}">
+
+            <hr>
+
+            <h2>Generated Educational Simulation</h2>
+
+            <p>
+                The following output was generated using the fictional
+                information shown above.
+            </p>
+
+            <pre th:text="${generatedResult}"></pre>
+
+        </section>
+
     </div>
 
-    <br>
-
-    <button type="submit">
-        Confirm
-    </button>
-
-</form>
-
-
-<div th:if="${selectedEmployee != null}">
-
-    <hr>
-
-    <h2>Selected Target</h2>
-
-    <p>
-        <strong>Name:</strong>
-        <span th:text="${selectedEmployee.name}">
-            Employee Name
-        </span>
-    </p>
-
-    <p>
-        <strong>Company:</strong>
-        <span th:text="${selectedEmployee.company.name}">
-            Company
-        </span>
-    </p>
-
-    <p>
-        <strong>Industry:</strong>
-        <span th:text="${selectedEmployee.company.industry}">
-            Industry
-        </span>
-    </p>
-
-    <p>
-        <strong>Role:</strong>
-        <span th:text="${selectedEmployee.role}">
-            Role
-        </span>
-    </p>
-
-    <p>
-        <strong>Department:</strong>
-        <span th:text="${selectedEmployee.department}">
-            Department
-        </span>
-    </p>
-
-    <h3>Simulated Public Information</h3>
-
-    <p>
-        <strong>Public Interests:</strong>
-        <span th:text="${selectedEmployee.publicInterests}">
-            Interests
-        </span>
-    </p>
-
-    <p>
-        <strong>Recent Public Post:</strong>
-        <span th:text="${selectedEmployee.recentPost}">
-            Recent Post
-        </span>
-    </p>
-
-    <p>
-        <strong>Public Source:</strong>
-        <span th:text="${selectedEmployee.visibilitySource}">
-            Source
-        </span>
-    </p>
-
-</div>
-
-<div th:if="${promptPreview != null}">
-
-    <hr>
-
-    <h2>LLM Prompt Preview</h2>
-
-    <p>
-        The following text represents the information that will be
-        sent to the language model.
-    </p>
-
-    <pre th:text="${promptPreview}"></pre>
-
-</div>
+</main>
 
 </body>
 
