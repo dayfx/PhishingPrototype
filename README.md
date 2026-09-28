@@ -8,7 +8,6 @@ Required installations:
 
 Clone repository to local:
 git clone https://github.com/dayfx/PhishingPrototype.git
-cd <folder>
 
 Start Docker Container with Database:
 docker compose up -d
