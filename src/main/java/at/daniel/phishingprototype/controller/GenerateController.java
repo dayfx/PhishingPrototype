@@ -176,10 +176,6 @@ public class GenerateController {
                 personalizationNotes
         );
 
-        /*
-         * The prompt is deterministic from the employee profile,
-         * so rebuild it on the server instead of trusting an HTML field.
-         */
         record.setPrompt(
                 promptService.buildEmployeePrompt(employee)
         );
@@ -249,7 +245,6 @@ public class GenerateController {
                 notes
         };
     }
-
 
     private String buildApiErrorMessage(
             RestClientResponseException exception) {

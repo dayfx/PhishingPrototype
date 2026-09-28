@@ -32,7 +32,6 @@ public class HomeController {
 
         model.addAttribute("company", new Company());
         model.addAttribute("companies", companyRepository.findAll());
-
         model.addAttribute("employee", new Employee());
         model.addAttribute("employees", employeeRepository.findAll());
 
@@ -43,7 +42,6 @@ public class HomeController {
     public String createCompany(@ModelAttribute Company company) {
 
         companyRepository.save(company);
-
         return "redirect:/";
     }
 
